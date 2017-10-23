@@ -16,7 +16,7 @@ int main() {
 		// analisa, escreve e define o desconto para os cargos
 		switch (cargo) {
 			case 1: {
-				cout << "Escrituario" << endl;
+				cout << "Escriturario" << endl;
 				percentual = 50;
 				break;
 			}
