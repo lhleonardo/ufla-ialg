@@ -2,71 +2,22 @@
 
 using namespace std;
 
-int main() {
-	unsigned int horaInicio, minutoInicio;
-	unsigned int horaFim, minutoFim;
+int main(){
+	int horaInicio, minutoInicio, horaFinal, minutoFinal, horaDuracao, minutoDuracao;
 	
-	unsigned int horaTotal, minutoTotal;
+	cin >> horaInicio >> minutoInicio >> horaFinal >> minutoFinal;
 	
-	cin >> horaInicio >> minutoInicio;
-	cin >> horaFim >> minutoFim;
+	horaDuracao = horaFinal - horaInicio;
 	
-	if (horaFim > horaInicio) {
-		// mesmo dia
-		horaTotal = horaFim - horaInicio;
-		if (minutoFim > minutoInicio) {
-			minutoTotal = minutoFim - minutoInicio;
-		} else if (minutoInicio > minutoFim) {
-			minutoTotal = minutoInicio - minutoFim;
-			if (minutoTotal < 0) {
-				minutoTotal *= -1;
-				
-			}
-			horaTotal--;
-		} else if (minutoFim == minutoInicio) {
-			minutoTotal = 0;
-		}		
-	} else if (horaFim < horaInicio) {
-		horaTotal = (24 - horaInicio) + horaFim;
-		if (minutoFim > minutoInicio) {
-			minutoTotal = minutoFim - minutoInicio;
-		} else if (minutoInicio > minutoFim) {
-			minutoTotal = minutoInicio - minutoFim;
-			if (minutoTotal < 0) {
-				minutoTotal *= -1;
-				
-			}
-			horaTotal--;	
-			//minutoTotal = 60 - minutoTotal;
-		} else if (minutoFim == minutoInicio) {
-			minutoTotal = 0;
-		}			
-		
-	} else if (horaInicio == horaFim){
-		// horas iguais e com minutos iguais ou diferentes
-		horaTotal = 0;
-		if (minutoFim > minutoInicio) {
-			minutoTotal = minutoFim - minutoInicio;
-		} else if (minutoInicio > minutoFim) {
-			minutoTotal = minutoInicio - minutoFim;
-			if (minutoTotal < 0) {
-				minutoTotal *= -1;
-				
-			}
-			//horaTotal--;
-			//minutoTotal = 60 - minutoTotal;
-		} else if (minutoFim == minutoInicio) {
-			// minuto igual não passou nada na hora igual
-			minutoTotal = 0;
-		}			
-	} else {
-		// se digitar valores negativos...
-		horaTotal = 0;
-		minutoTotal = 0;
+	minutoDuracao = minutoFinal - minutoInicio;
+	
+	if (horaDuracao < 0){
+		horaDuracao = horaDuracao + 24;
+	}
+	if(minutoDuracao < 0){
+		horaDuracao = horaDuracao - 1;
+		minutoDuracao = minutoDuracao + 60;
 	}
 	
-	
-	cout << horaTotal << " " << minutoTotal << endl;
-	
-	return 0;
+	cout << horaDuracao << " " << minutoDuracao;
 }
