@@ -1,0 +1,5 @@
+Martelo 30 32.5
+Prego 0.1 1
+Fita_Isolante 3 4.5
+Chave_Fenda 4.5 7
+Trena 12 13.99

@@ -1,11 +1,11 @@
 #include <iostream>
-#include <string.h>
+#include <cstring>
 
 using namespace std;
 
 int main() {
-	string menor = "f", novo = "c";
+	string nome = "Alexandre", existente = "Andre";
 
-	cout << menor.compare(novo);
+	cout << strcmp(nome.c_str(), existente.c_str());
 	return 0;
 }
