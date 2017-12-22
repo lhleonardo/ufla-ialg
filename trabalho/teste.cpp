@@ -1,113 +1,91 @@
-/*
-Faça um programa que receba N números inteiros digitados pelo usuário. 
-Feito isso, ordene-os de forma crescente e os salve em um arquivo 
-"entrada.dat". Em seguida, leia o arquivo "entrada.dat", faça uma busca 
-binária nos números lidos e salve, em outro arquivo como "saida.dat" a 
-posição no vetor do número buscado. Salve -1 se o número não for 
-encontrado */
-
 #include <iostream>     
 #include <fstream>   
+
 using namespace std;
 
-int buscaBin (int entrada[], int ini, int fim, int buscado)
-{
-    int meio = (ini+fim)/2;
-    cout<<ini<<"\t"<<meio<<"\t"<<fim<<endl;
-    
-    if (ini<=fim)
-    {
-        cout<<"Meio: "<<entrada[meio]<<endl;
-        if (entrada[meio] == buscado)
-            return meio;
-        else
-            if (buscado < entrada[meio])
-            {
-                cout<<"Meio: "<<entrada[meio]<<endl;
-                return buscaBin (entrada, ini, meio-1, buscado);
-            }
-            else
-                return buscaBin (entrada, meio+1, fim, buscado);
-    }
-    else
-        return -1;    
+struct Pessoa {
+	int codigo;
+	char nome[60];
+	int idade;
 
-}
+};
 
-void flutuacao (int entrada[], int tam)
-{
-    int i = 0;
-    bool troca = true;
-    int aux;
-    
-    while ((troca) && (i < tam))
-    {
-        troca = false;
-        for (int j=0; j < (tam-1) - i; j++)
-        {
-            if (entrada[j] > entrada[j+1])
-            {
-                aux = entrada[j];
-                entrada[j] = entrada[j+1];
-                entrada[j+1] = aux;
-                
-                troca = true;
-            }    
-        }
-        i++;
-    }
-}
+int main() {
+	fstream arquivo("pessoas1.dat", ios::binary | ios::app | ios::in | ios::out);
 
+	if (arquivo) {
+		//Pessoa *p = new Pessoa;
+		//cin >> p->codigo;
+		//cin >> p->nome;
+		//cin >> p->idade;
 
+		//arquivo.write(reinterpret_cast<const char *> (p), sizeof(Pessoa));
 
-int main () 
-{
-    int qtd; 
-    cin>>qtd;
-    
-    ofstream saida("entrada.dat", ios::binary);
-    
-    int dado[qtd];
-  
-    for (int i=0; i<qtd; i++)
-    {
-        cin>>dado[i];
-    }
-  
-    flutuacao (dado, qtd);
-    
-    saida.write ((char *) (dado), sizeof(dado));
-    saida.close();
+		//delete p;
 
-    ifstream entrada("entrada.dat", ios::binary);
-    ofstream resultado("saida.dat", ios::binary);
-    
-    if (entrada) 
-    {
-        entrada.seekg (0, entrada.end);
-        int tam = entrada.tellg();
-        entrada.seekg (0, entrada.beg);
-        
-        int busca[tam/sizeof(int)];
-                    
-        entrada.read ((char *) (busca), tam);
-        entrada.close();
-        
-        for (int i=0; i<qtd; i++)
-            cout<<busca[i]<<"\t";
-        
-        int procura, result;
-        cin>>procura;
-        
-        result = buscaBin(busca,0,qtd-1,procura);
-        cout<<result;
-        resultado.write ((char *) (&result), sizeof(result));
-        resultado.close();
+		arquivo.seekg(0, arquivo.end);
+		int bytes = arquivo.tellg();
+		arquivo.seekg(0, arquivo.beg);
 
-    }
-    else
-    cout<<"Erro na abertura do arquivo";
-  
-  
-  return 0;
+		int total = bytes / sizeof(Pessoa);
+		
+		Pessoa *valores = new Pessoa[total];
+
+		arquivo.read((char *) (valores), bytes);
+
+		for(int i = 0; i < total; i++) {
+			cout << "Codigo: " << valores[i].codigo << endl;
+			cout << "Nome: " << valores[i].nome << endl;
+			cout << "Idade: " << valores[i].idade << endl;
+			cout << "-------------------------" << endl;
+		}
+
+		cout << "Total: " << total << endl;
+		
+		cout << endl;
+		cout << "Digite o codigo de quem você deseja editar: ";
+		int codigo;
+		cin >> codigo;
+
+		if (codigo <= total) {
+			arquivo.seekg((codigo-1)*sizeof(Pessoa), arquivo.beg);
+			
+			Pessoa *selecionada = new Pessoa;
+			arquivo.read((char *) (selecionada), sizeof(Pessoa));
+
+			cout << "Pessoa selecionada: " << endl;
+			cout << "Codigo: " << selecionada->codigo << endl;
+			cout << "Nome: " << selecionada->nome << endl;
+			cout << "Idade: " << selecionada->idade << endl;
+
+			cout  << "******EDICAO*********" << endl;
+			cout << "Informe novo nome:";
+			cin >> selecionada->nome;
+			cout << "Informe nova idade: ";
+			cin >> selecionada->idade;
+
+			valores[(selecionada->codigo)-1] = *selecionada;
+
+			arquivo.close();
+
+			arquivo.open("pessoas1.dat", ios::binary | ios::trunc | ios::out);
+
+			for(int i = 0; i < total; i++) {
+				Pessoa atual = valores[i];
+				arquivo.write(reinterpret_cast<const char *> (&atual), sizeof(Pessoa));
+			}
+
+			cout << endl;
+			cout << "Dados gravados! Reinicie e veja se foi alterado." << endl;
+		} else {
+			cout << "Não posso selecionar alguem que não existe. ";
+			cout << "O codigo está fora do intervalo [1, " << total << "]." << endl;
+		}
+	} else {
+		cout << "Arquivo fechado!";
+	}
+
+	
+
+	return 0;
 }
