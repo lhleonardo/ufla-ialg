@@ -20,6 +20,25 @@ struct Game {
 	char descricao[MAX_NOME];
 };
 
+
+/**
+ * Funcao auxiliar que apenas limpa o prompt de comando (tela).
+ *
+ * Como nos dois sistemas mais utilizados (Windows e Linux) os comandos
+ * de limpeza da tela sao diferentes, e sabendo que toda instrucao bem-
+ * sucedida passada para a funcao *system* tem o retorno como 0, limpa a
+ * tela para respectivo S.O. em execucao (os mais utilizados).
+ *
+ * Ou seja, se o comando de limpar no windows nao der certo (retornar
+ * algo diferente de zero), quer dizer que deve-se limpar a partir do
+ * comando do Linux, e vice-versa.
+ *
+ * */
+void limpa_tela() {
+	if (system("clear") != 0) {system("cls");}
+	if (system("cls") != 0) {system("clear");}
+}
+
 /////////////////////////// CADASTRO ///////////////////////////////////
 /**
  * Metodo responsavel por realizar a coleta dos dados de um determinado
@@ -34,18 +53,19 @@ void cadastrar(ofstream *gravador, int codigo) {
 	
 	// META: 
 	// trabalhar capturando os textos com espacos
-	system("clear");
+	//system("clear");
+	limpa_tela();
 	cout << endl << "Cadastrando novo game..." << endl;
 	cout << endl;
 	cout << "Preencha as informacoes abaixo: " << endl;
-	cout << " - Nome (até " << MAX_NOME << " caracteres e SEM ESPACOS): ";
+	cout << " - Nome (ate " << MAX_NOME << " caracteres e SEM ESPACOS): ";
 	cin >> leitura->nome;
 	
 	cout << " - Ano de Lancamento: ";
 	cin >> leitura->ano_lancamento;
-	cout << " - Plataforma (até " << MAX_NOME << " caracteres e separada por - ): ";
+	cout << " - Plataforma (ate " << MAX_NOME << " caracteres e separada por - ): ";
 	cin >> leitura->plataforma;
-	cout << " - Descricao (até " << MAX_NOME << " caracteres e SEM ESPACOS): ";
+	cout << " - Descricao (ate " << MAX_NOME << " caracteres e SEM ESPACOS): ";
 	cin >> leitura->descricao;
 
 	leitura->codigo = codigo;
@@ -92,23 +112,7 @@ int qtd_cadastrados(int buffer) {
 //////////////////////// FIM DO CADASTRO ///////////////////////////////
 
 /////////////////////////// LISTAGEM ///////////////////////////////////
-/**
- * Funcao auxiliar que apenas limpa o prompt de comando (tela).
- *
- * Como nos dois sistemas mais utilizados (Windows e Linux) os comandos
- * de limpeza da tela sao diferentes, e sabendo que toda instrucao bem-
- * sucedida passada para a funcao *system* tem o retorno como 0, limpa a
- * tela para respectivo S.O. em execucao (os mais utilizados).
- *
- * Ou seja, se o comando de limpar no windows nao der certo (retornar
- * algo diferente de zero), quer dizer que deve-se limpar a partir do
- * comando do Linux, e vice-versa.
- *
- * */
-void limpa_tela() {
-	if (system("clear") != 0) {system("cls");}
-	if (system("cls") != 0) {system("clear");}
-}
+
 
 
 /**
@@ -512,9 +516,9 @@ void modifica(ifstream *leitor, ofstream *gravador) {
 		cin >> selecionado->nome;
 		cout << " - Ano do Lancamento: ";
 		cin >> selecionado->ano_lancamento;
-		cout << " - Plataforma (até " << MAX_NOME << " caracteres e separada por - ): ";
+		cout << " - Plataforma (ate " << MAX_NOME << " caracteres e separada por - ): ";
 		cin >> selecionado->plataforma;
-		cout << " - Descricao (até " << MAX_NOME << " caracteres e SEM ESPACOS): ";
+		cout << " - Descricao (ate " << MAX_NOME << " caracteres e SEM ESPACOS): ";
 		cin >> selecionado->descricao;
 
 		reescreve_arquivo(leitor, gravador, selecionado);
@@ -696,4 +700,3 @@ int main() {
 
 	return 0;
 }
-
