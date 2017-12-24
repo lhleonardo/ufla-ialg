@@ -92,10 +92,14 @@ int tamanho_buffer(ifstream *arquivo) {
  * de Game salvo em seu corpo.
  *
  * Logica do valor: Tamanho total / tamanho do Registro
+ * 
+ * Se o arquivo nao foi criado, retorna um valor negativo.
  *
  * */
 int qtd_cadastrados(ifstream *arquivo) {
-	return tamanho_buffer(arquivo) / sizeof(Game);
+	if ((*arquivo).good())
+		return tamanho_buffer(arquivo) / sizeof(Game);
+	else return -1;
 }
 
 /**
