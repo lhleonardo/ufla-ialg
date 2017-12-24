@@ -494,7 +494,7 @@ void reescreve_arquivo(ifstream *leitor, ofstream *gravador, Game *selecionado) 
  *
  *
  * */
-void modifica(ifstream *leitor, ofstream *gravador) {
+bool modifica(ifstream *leitor, ofstream *gravador) {
 	cout << "Escolha um dos Games abaixo para comecar a editar..." << endl;
 	cout << endl;
 	
@@ -528,9 +528,11 @@ void modifica(ifstream *leitor, ofstream *gravador) {
 		reescreve_arquivo(leitor, gravador, selecionado);
 
 		delete selecionado;
+		return true;
 	} else {
 		cout << "Nao foi possivel modificar o Game com o codigo " << codigo << "." << endl;
 		cout << "Motivo: Codigo invalido ou inexistente." << endl;
+		return false;
 	}
 }
 
@@ -602,13 +604,12 @@ int main() {
 					ofstream gravador(nome_arquivo, ios::binary | ios::app);
 
 					if (qtd_cadastrados(&leitor) >= 1) {
-						modifica(&leitor, &gravador);
-
-						cout << endl;
-						cout << "Sucesso! O Game foi alterado." << endl;
+						cout << endl;						
+						if (modifica(&leitor, &gravador)) {
+							cout << "Sucesso! O Game foi alterado." << endl;
+						}
 						cout << "Deseja alterar outro Game? (y/n)";
 						cin >> escolha;
-
 						
 					} else {
 						limpa_tela();
@@ -704,4 +705,3 @@ int main() {
 
 	return 0;
 }
-
