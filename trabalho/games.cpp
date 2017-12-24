@@ -235,9 +235,9 @@ void busca_pelo_codigo(ifstream *leitor) {
 		char op;
 		do {
 			limpa_tela();
-			cout << "Game encontrado! Seguem os dados abaixo: " << endl;
+			cout << "Game encontrado! Seguem os dados abaixo: " << endl << endl;
 			imprime_game(valores[posicao], false);
-			cout << "Pressione Y/y para voltar as buscas...";
+			cout << endl <<  "Pressione Y/y para voltar as buscas...";
 			cin >> op;
 		} while (op != 'Y' and op != 'y');
 	} else {
@@ -278,9 +278,9 @@ void busca_pelo_nome(ifstream *leitor) {
 		char op;
 		do {
 			limpa_tela();
-			cout << "Game encontrado! Seguem os dados abaixo: " << endl;
+			cout << "Game encontrado! Seguem os dados abaixo: " << endl << endl;
 			imprime_game(valores[posicao], false);
-			cout << "Pressione Y/y para voltar as buscas...";
+			cout << endl<< "Pressione Y/y para voltar as buscas...";
 			cin >> op;
 		} while (op != 'Y' and op != 'y');
 	} else {
@@ -325,7 +325,7 @@ void busca_pela_plataforma(ifstream *leitor) {
 		char op;
 		do {
 			limpa_tela();
-			cout << "Games encontrados! Seguem os dados abaixo: " << endl;
+			cout << "Games encontrados! Seguem os dados abaixo: " << endl << endl;
 			int i = 0;
 			int posicao;
 			while(i < contador) {
@@ -384,7 +384,7 @@ void busca_pelo_ano(ifstream *leitor) {
 		do {
 			limpa_tela();
 			
-			cout << "Games encontrados! Seguem os dados abaixo: " << endl;
+			cout << "Games encontrados! Seguem os dados abaixo: " << endl << endl;
 			for(int i = 0; i < contador; i++) {
 				int posicao = posicoes[i];
 				imprime_game(valores[posicao], true);
@@ -636,7 +636,7 @@ int main() {
 				if (qtd_cadastrados(&leitor) > 0) {
 					do{
 						limpa_tela();
-						cout << "Qual é o parametro de busca? " << endl;
+						cout << "Qual eh o parametro de busca? " << endl;
 						cout << "1 - Codigo de cadastro" << endl;
 						cout << "2 - Nome do Game" << endl;
 						cout << "3 - Ano de Lancamento" << endl;
@@ -704,3 +704,4 @@ int main() {
 
 	return 0;
 }
+
