@@ -1,6 +1,7 @@
 #include <iostream>
 #include <fstream>
 #include <cstring>
+#include <limits>
 #include <stdlib.h>
 
 // TAMANHO MAXIMO PERMITIDO PARA UM TEXTO, FINS DE NORMALIZACAO
@@ -13,13 +14,35 @@ char nome_arquivo[] = {"games.dat"};
 
 // ESTRUTURA QUE REPRESENTA UM DETERMINADO GAME
 struct Game {
-	int codigo;
-	char nome[MAX_NOME];
-	int ano_lancamento;
-	char plataforma[MAX_NOME];
-	char descricao[MAX_NOME];
+    int codigo;
+    char nome[MAX_NOME];
+    int ano_lancamento;
+    char plataforma[MAX_NOME];
+    char descricao[MAX_NOME];
 };
 
+void getstring(char value[]) {
+    cin.ignore();
+    cin.getline(value, MAX_NOME);
+}
+
+int getint() {
+    int x=0;
+
+    while (!(cin >> x)) {
+        cin.clear();
+        cin.ignore(numeric_limits<streamsize>::max(),'\n');
+        cout << "Entrada invalida! Digite um numero valido: ";
+    }
+    
+    return x;
+}
+
+void press_enter() {
+    cin.ignore();
+    cout << "Pressione ENTER para continuar... " << flush;
+    cin.ignore(numeric_limits<streamsize> ::max(), '\n' );
+}
 /////////////////////////// CADASTRO ///////////////////////////////////
 /**
  * Metodo responsavel por realizar a coleta dos dados de um determinado
@@ -30,29 +53,28 @@ struct Game {
  *
  * */
 void cadastrar(ofstream *gravador, int codigo) {
-	Game *leitura = new Game;
-	
-	// META: 
-	// trabalhar capturando os textos com espacos
-	system("clear");
-	cout << endl << "Cadastrando novo game..." << endl;
-	cout << endl;
-	cout << "Preencha as informacoes abaixo: " << endl;
-	cout << " - Nome (até " << MAX_NOME << " caracteres e SEM ESPACOS): ";
-	cin >> leitura->nome;
-	
-	cout << " - Ano de Lancamento: ";
-	cin >> leitura->ano_lancamento;
-	cout << " - Plataforma (até " << MAX_NOME << " caracteres e separada por - ): ";
-	cin >> leitura->plataforma;
-	cout << " - Descricao (até " << MAX_NOME << " caracteres e SEM ESPACOS): ";
-	cin >> leitura->descricao;
+    Game *leitura = new Game;
+    
+    system("clear");
 
-	leitura->codigo = codigo;
+    cout << endl << "Cadastrando novo game..." << endl;
+    cout << endl;
 
-	(*gravador).write(reinterpret_cast<const char *> (leitura), sizeof(Game));
+    cout << "Preencha as informacoes abaixo: " << endl;
+    cout << " - Nome (até " << MAX_NOME << " caracteres): ";
+    getstring(leitura->nome);
+    cout << " - Ano de Lancamento: ";
+    cin >> leitura->ano_lancamento;
+    cout << " - Plataforma (até " << MAX_NOME << " caracteres e separada por - ): ";
+    cin >> leitura->plataforma;
+    cout << " - Descricao (até " << MAX_NOME << " caracteres): ";
+    getstring(leitura->descricao);
 
-	delete leitura;
+    leitura->codigo = codigo;
+
+    (*gravador).write(reinterpret_cast<const char *> (leitura), sizeof(Game));
+
+    delete leitura;
 }
 
 /**
@@ -61,10 +83,10 @@ void cadastrar(ofstream *gravador, int codigo) {
  * ultimo elemento). Retorna um inteiro.
  * */
 int tamanho_buffer(ifstream *arquivo) {
-	(*arquivo).seekg(0, (*arquivo).end);
-	int tam = (*arquivo).tellg();
-	(*arquivo).seekg(0, (*arquivo).beg);
-	return tam;
+    (*arquivo).seekg(0, (*arquivo).end);
+    int tam = (*arquivo).tellg();
+    (*arquivo).seekg(0, (*arquivo).beg);
+    return tam;
 }
 
 /**
@@ -75,7 +97,7 @@ int tamanho_buffer(ifstream *arquivo) {
  *
  * */
 int qtd_cadastrados(ifstream *arquivo) {
-	return tamanho_buffer(arquivo) / sizeof(Game);
+    return tamanho_buffer(arquivo) / sizeof(Game);
 }
 
 /**
@@ -87,7 +109,7 @@ int qtd_cadastrados(ifstream *arquivo) {
  * Sobrecarga da funcao que utiliza um ponteiro de arquivo
  * */
 int qtd_cadastrados(int buffer) {
-	return buffer/sizeof(Game);
+    return buffer/sizeof(Game);
 }
 //////////////////////// FIM DO CADASTRO ///////////////////////////////
 
@@ -106,8 +128,8 @@ int qtd_cadastrados(int buffer) {
  *
  * */
 void limpa_tela() {
-	if (system("clear") != 0) {system("cls");}
-	if (system("cls") != 0) {system("clear");}
+    if (system("clear") != 0) {system("cls");}
+    if (system("cls") != 0) {system("clear");}
 }
 
 
@@ -119,13 +141,13 @@ void limpa_tela() {
  *
  * */
 void imprime_game(Game valor, bool separador) {
-	cout << "- Codigo: " << valor.codigo << endl;
-	cout << "\t- Nome do Jogo: " << valor.nome << endl;
-	cout << "\t- Ano de Lancamento: " << valor.ano_lancamento << endl;
-	cout << "\t- Plataformas: " << valor.plataforma << endl;
-	cout << "\t- Descricao: " << valor.descricao << endl;
-	if (separador)
-		cout << "--------------------------------------------------------" << endl;
+    cout << "- Codigo: " << valor.codigo << endl;
+    cout << "\t- Nome do Jogo: " << valor.nome << endl;
+    cout << "\t- Ano de Lancamento: " << valor.ano_lancamento << endl;
+    cout << "\t- Plataformas: " << valor.plataforma << endl;
+    cout << "\t- Descricao: " << valor.descricao << endl;
+    if (separador)
+        cout << "--------------------------------------------------------" << endl;
 }
 
 /**
@@ -142,41 +164,33 @@ void imprime_game(Game valor, bool separador) {
  *
  * */
 void listar(ifstream *leitor, bool rotular) {
-	if (rotular)
-		limpa_tela();
+    if (rotular)
+        limpa_tela();
 
-	// qtd de bytes no arquivo binario
-	int buffer = tamanho_buffer(leitor);
+    // qtd de bytes no arquivo binario
+    int buffer = tamanho_buffer(leitor);
 
-	// qtd de registros presentes (dados integros)
-	unsigned int qtd = qtd_cadastrados(buffer);
-	
-	Game *valores = new Game[qtd];
+    // qtd de registros presentes (dados integros)
+    unsigned int qtd = qtd_cadastrados(buffer);
+    
+    Game *valores = new Game[qtd];
 
-	(*leitor).read((char *) (valores), buffer);
+    (*leitor).read((char *) (valores), buffer);
 
-	if (rotular)
-		cout << " ****** Listagem dos Games cadastrados ******" << endl;
+    if (rotular)
+        cout << " ****** Listagem dos Games cadastrados ******" << endl;
 
-	cout << endl;
+    cout << endl;
 
-	for(unsigned int i = 0; i < qtd; i++) {
-		imprime_game(valores[i], true);
-	}
-	
-	if (rotular) {
-		cout << "Total: " << qtd << " registros." << endl;
-
-		cout << endl;
-		// apenas para a listagem aparecer e ir direto para o menu principal
-		// ter um tempo de delay...
-		char escolha;
-		do {
-			cout << "Pressione Y/y para voltar ao menu principal...";
-			cin >> escolha;
-		} while (escolha != 'Y' and escolha != 'y');
-	}
-	delete [] valores;
+    for(unsigned int i = 0; i < qtd; i++) {
+        imprime_game(valores[i], true);
+    }
+    
+    if (rotular) {
+        cout << "Total: " << qtd << " registros." << endl;
+        cout << endl;
+    }
+    delete [] valores;
 }
 //////////////////////// FIM DA LISTAGEM ////////////////////////////////
 
@@ -189,11 +203,11 @@ void listar(ifstream *leitor, bool rotular) {
  * binario e converter para vetor de registros validos para as PESQUISAS.
  * */
 Game * busca_todos(ifstream * leitor, int qtd) {
-	Game *valores = new Game[qtd];
+    Game *valores = new Game[qtd];
 
-	(*leitor).read((char *) (valores), qtd * sizeof(Game));
+    (*leitor).read((char *) (valores), qtd * sizeof(Game));
 
-	return valores;
+    return valores;
 }
 
 /**
@@ -202,46 +216,43 @@ Game * busca_todos(ifstream * leitor, int qtd) {
  * 
  * */
 void busca_pelo_codigo(ifstream *leitor) {
-	limpa_tela();
+    limpa_tela();
 
-	cout << "Informe o codigo que deseja procurar: ";
-	int codigo;
-	cin >> codigo;
+    cout << "Informe o codigo que deseja procurar: ";
+    int codigo = getint();
 
-	int qtd = qtd_cadastrados(leitor), posicao = -1;
+    int qtd = qtd_cadastrados(leitor), posicao = -1;
 
-	Game *valores = busca_todos(leitor, qtd);
+    Game *valores = busca_todos(leitor, qtd);
 
-	
-	// se o codigo for maior que a quantidade disponivel, nem procura
-	if (codigo <=qtd) {	
-		
-		for(int i = 0; i < qtd and posicao == -1; i++) {
-			if (valores[i].codigo == codigo) {
-				posicao = i;
-			}
-		}
-	}
-	
-	if (posicao != -1) {
-		char op;
-		do {
-			limpa_tela();
-			cout << "Game encontrado! Seguem os dados abaixo: " << endl;
-			imprime_game(valores[posicao], false);
-			cout << "Pressione Y/y para voltar as buscas...";
-			cin >> op;
-		} while (op != 'Y' and op != 'y');
-	} else {
-		cout << "Desculpe! Nao existe nenhum Game cadastrado com o codigo " << codigo << endl;
-		cout << "Deseja procurar novamente (y/n)? ";
-		char op;
-		cin >> op;
-		if (op == 'y' and op == 'Y')
-			busca_pelo_codigo(leitor);
-	}
+    
+    // se o codigo for maior que a quantidade disponivel, nem procura
+    if (codigo <=qtd) { 
+        for(int i = 0; i < qtd and posicao == -1; i++) {
+            if (valores[i].codigo == codigo) {
+                posicao = i;
+            }
+        }
+    }
+    
+    if (posicao != -1) {
+        limpa_tela();
+        cout << "Game encontrado! Seguem os dados abaixo: " << endl;
+        cout << endl;
+        imprime_game(valores[posicao], false);
+        press_enter();
+    } else {
+        cout << endl;
+        cout << "Desculpe! Nao existe nenhum Game cadastrado com o codigo " << codigo << endl;
+        cout << endl;
+        cout << "Deseja procurar novamente (y/n)? ";
+        char op;
+        cin >> op;
+        if (op == 'y' and op == 'Y')
+            busca_pelo_codigo(leitor);
+    }
 
-	delete valores;
+    delete valores;
 }
 
 /**
@@ -250,41 +261,41 @@ void busca_pelo_codigo(ifstream *leitor) {
  *
  * */
 void busca_pelo_nome(ifstream *leitor) {
-	limpa_tela();
+    limpa_tela();
 
-	cout << "Informe o nome do Game que deseja encontrar: ";
-	char *nome = new char[MAX_NOME];
-	cin >> nome;
+    cout << "Informe o nome do Game que deseja encontrar: ";
 
-	int qtd = qtd_cadastrados(leitor), posicao = -1;
+    char *nome = new char[MAX_NOME];
+    getstring(nome);
 
-	Game *valores = busca_todos(leitor, qtd);
+    int qtd = qtd_cadastrados(leitor), posicao = -1;
 
-	for(int i = 0; i < qtd and posicao == -1; i++) {
-		if (strcmp(valores[i].nome, nome) == 0) {
-			posicao = i;
-		}
-	}
-	
-	if (posicao != -1) {
-		char op;
-		do {
-			limpa_tela();
-			cout << "Game encontrado! Seguem os dados abaixo: " << endl;
-			imprime_game(valores[posicao], false);
-			cout << "Pressione Y/y para voltar as buscas...";
-			cin >> op;
-		} while (op != 'Y' and op != 'y');
-	} else {
-		cout << "Desculpe! Nao existe nenhum Game cadastrado com o nome " << nome << endl;
-		cout << "Deseja procurar novamente (y/n)? ";
-		char op;
-		cin >> op;
-		if (op == 'y' or op == 'Y')
-			busca_pelo_nome(leitor);
-	}
+    Game *valores = busca_todos(leitor, qtd);
 
-	delete valores;
+    for(int i = 0; i < qtd and posicao == -1; i++) {
+        if (strcmp(valores[i].nome, nome) == 0) {
+            posicao = i;
+        }
+    }
+    
+    if (posicao != -1) {
+        
+        limpa_tela();
+        cout << "Game encontrado! Seguem os dados abaixo: " << endl;
+        imprime_game(valores[posicao], false);
+        press_enter();
+    } else {
+        cout << endl;
+        cout << "Desculpe! Nao existe nenhum Game cadastrado com o nome " << nome << endl;
+        cout << endl;
+        cout << "Deseja procurar novamente (y/n)? ";
+        char op;
+        cin >> op;
+        if (op == 'y' or op == 'Y')
+            busca_pelo_nome(leitor);
+    }
+
+    delete valores;
 
 }
 
@@ -294,56 +305,53 @@ void busca_pelo_nome(ifstream *leitor) {
  *
  * */
 void busca_pela_plataforma(ifstream *leitor) {
-	limpa_tela();
+    limpa_tela();
 
-	cout << "Informe a plataforma (separados entre hifen): ";
-	char *plataforma = new char[MAX_NOME];
-	cin >> plataforma;
+    cout << "Informe a plataforma (separados entre hifen): ";
+    char *plataforma = new char[MAX_NOME];
+    cin >> plataforma;
 
-	int qtd = qtd_cadastrados(leitor);
+    int qtd = qtd_cadastrados(leitor);
 
-	Game *valores = busca_todos(leitor, qtd);
+    Game *valores = busca_todos(leitor, qtd);
 
-	int *posicoes = new int[qtd], contador = 0;
-		
-	for(int i = 0; i < qtd; i++) {
-		if (strcmp(valores[i].plataforma, plataforma) == 0) {
-			posicoes[contador] = i;
-			contador++;
-		}
-	}
-	
-	if (contador > 0) {
-		char op;
-		do {
-			limpa_tela();
-			cout << "Games encontrados! Seguem os dados abaixo: " << endl;
-			int i = 0;
-			int posicao;
-			while(i < contador) {
-				posicao = posicoes[i];
-				if (i == 0 and contador == 1)
-					imprime_game(valores[posicao], false);
-				else
-					imprime_game(valores[posicao], true);
-				i++;
-			}
+    int *posicoes = new int[qtd], contador = 0;
+        
+    for(int i = 0; i < qtd; i++) {
+        if (strcmp(valores[i].plataforma, plataforma) == 0) {
+            posicoes[contador] = i;
+            contador++;
+        }
+    }
+    
+    if (contador > 0) {
+        limpa_tela();
+        cout << "Games encontrados! Seguem os dados abaixo: " << endl;
+        int i = 0;
+        int posicao;
+        while(i < contador) {
+            posicao = posicoes[i];
+            if (i == 0 and contador == 1)
+                imprime_game(valores[posicao], false);
+            else
+                imprime_game(valores[posicao], true);
+            i++;
+        }
 
-			cout << endl;
-			cout << "Pressione Y/y para voltar as buscas...";
-			cin >> op;
-		} while (op != 'Y' and op != 'y');
-	} else {
-		cout << "Desculpe! Nao existe nenhum Game cadastrado que suporte SOMENTE a plataforma " << plataforma << endl;
-		cout << "Deseja procurar novamente (y/n)? ";
-		char op;
-		cin >> op;
-		if (op == 'y' or op == 'Y')
-			busca_pela_plataforma(leitor);
-	}
+        press_enter();
+    } else {
+        cout << endl;
+        cout << "Desculpe! Nao existe nenhum Game cadastrado que suporte SOMENTE a plataforma " << plataforma << endl;
+        cout << endl;
+        cout << "Deseja procurar novamente (y/n)? ";
+        char op;
+        cin >> op;
+        if (op == 'y' or op == 'Y')
+            busca_pela_plataforma(leitor);
+    }
 
-	delete [] posicoes;
-	delete valores;
+    delete [] posicoes;
+    delete valores;
 }
 
 /**
@@ -352,52 +360,48 @@ void busca_pela_plataforma(ifstream *leitor) {
  * 
  * */
 void busca_pelo_ano(ifstream *leitor) {
-	limpa_tela();
+    limpa_tela();
 
-	cout << "Informe o ano de lancamento do Game que deseja procurar: ";
-	int ano;
-	cin >> ano;
+    cout << "Informe o ano de lancamento do Game que deseja procurar: ";
+    int ano = getint();
 
-	int qtd = qtd_cadastrados(leitor), contador = 0;
+    int qtd = qtd_cadastrados(leitor), contador = 0;
 
-	Game *valores = busca_todos(leitor, qtd);
+    Game *valores = busca_todos(leitor, qtd);
 
-	int *posicoes = new int[qtd];
-	
-	for(int i = 0; i < qtd; i++) {
-		if (valores[i].ano_lancamento == ano) {
-			posicoes[contador++] = i;
-		}
-	}
-	
-	
-	if (contador > 0) {
-		char op;
-		do {
-			limpa_tela();
-			
-			cout << "Games encontrados! Seguem os dados abaixo: " << endl;
-			for(int i = 0; i < contador; i++) {
-				int posicao = posicoes[i];
-				imprime_game(valores[posicao], true);
-			}
+    int *posicoes = new int[qtd];
+    
+    for(int i = 0; i < qtd; i++) {
+        if (valores[i].ano_lancamento == ano) {
+            posicoes[contador++] = i;
+        }
+    }
+    
+    
+    if (contador > 0) {
+        limpa_tela();       
+        cout << "Games encontrados! Seguem os dados abaixo: " << endl;
 
-			cout << endl;
-			cout << "Pressione Y/y para voltar as buscas...";
-			cin >> op;
-		} while (op != 'Y' and op != 'y');
-	} else {
-		cout << "Desculpe! Nao existe nenhum Game cadastrado com o ano de lancamento em " << ano << endl;
-		cout << "Deseja procurar novamente (y/n)? ";
-		char op;
-		cin >> op;
-		if (op == 'y')
-			busca_pelo_codigo(leitor);
-	}
+        for(int i = 0; i < contador; i++) {
+            int posicao = posicoes[i];
+            imprime_game(valores[posicao], true);
+        }
 
-	delete [] posicoes;
+        press_enter();
+    } else {
+        cout << endl;
+        cout << "Desculpe! Nao existe nenhum Game cadastrado com o ano de lancamento em " << ano << endl;
+        cout << endl;
+        cout << "Deseja procurar novamente (y/n)? ";
+        char op;
+        cin >> op;
+        if (op == 'y')
+            busca_pelo_codigo(leitor);
+    }
 
-	delete valores;
+    delete [] posicoes;
+
+    delete valores;
 }
 /////////////////////// FIM DAS PESQUISAS //////////////////////////////
 
@@ -412,7 +416,7 @@ void busca_pelo_ano(ifstream *leitor) {
  * o primeiro valor.
  * */
 bool codigo_valido(ifstream *leitor, int codigo) {
-	return codigo <= qtd_cadastrados(leitor) and codigo > 0;
+    return codigo <= qtd_cadastrados(leitor) and codigo > 0;
 }
 
 /**
@@ -424,19 +428,19 @@ bool codigo_valido(ifstream *leitor, int codigo) {
  * 1, e assim sucessivamente.
  * */
 Game * obtem_unico_game(ifstream *leitor, int codigo) {
-	int posicao = (codigo-1) * sizeof(Game);
+    int posicao = (codigo-1) * sizeof(Game);
 
-	// posiciona o 'ponteiro' de leitura x posicoes pra frente do inicio
-	// do arquivo, ou seja, a posicao do registro que interessa
-	(*leitor).seekg(posicao, (*leitor).beg);
+    // posiciona o 'ponteiro' de leitura x posicoes pra frente do inicio
+    // do arquivo, ou seja, a posicao do registro que interessa
+    (*leitor).seekg(posicao, (*leitor).beg);
 
-	Game  *selecionada = new Game;
+    Game  *selecionada = new Game;
 
-	// coloca dentro de selecionada apenas o primeiro conteudo, ou seja,
-	// o registro necessario
-	(*leitor).read((char *) (selecionada), sizeof(Game));
+    // coloca dentro de selecionada apenas o primeiro conteudo, ou seja,
+    // o registro necessario
+    (*leitor).read((char *) (selecionada), sizeof(Game));
 
-	return selecionada;
+    return selecionada;
 }
 
 /**
@@ -454,30 +458,44 @@ Game * obtem_unico_game(ifstream *leitor, int codigo) {
  *
  * */
 void reescreve_arquivo(ifstream *leitor, ofstream *gravador, Game *selecionado) {
-	int total = qtd_cadastrados(leitor);
-	Game *valores = busca_todos(leitor, total);
+    int total = qtd_cadastrados(leitor);
+    Game *valores = busca_todos(leitor, total);
 
-	int posicao_selecionado = selecionado->codigo - 1;
+    int posicao_selecionado = selecionado->codigo - 1;
 
-	valores[posicao_selecionado] = *selecionado;
+    valores[posicao_selecionado] = *selecionado;
 
-	// fecha o arquivo que antes estava aberto
-	(*gravador).close();
+    // fecha o arquivo que antes estava aberto
+    (*gravador).close();
 
-	// abre novamente mas desta vez para substituir os valores...
-	// opcao padrao do ofstream eh substituir o conteudo presente
-	// quando abrir o arquivo
-	(*gravador).open(nome_arquivo, ios::binary);
+    // abre novamente mas desta vez para substituir os valores...
+    // opcao padrao do ofstream eh substituir o conteudo presente
+    // quando abrir o arquivo
+    (*gravador).open(nome_arquivo, ios::binary);
 
-	for(int i = 0; i < total; i++) {
-		(*gravador).write(reinterpret_cast<const char *> (&valores[i]), sizeof(Game));
-	}
+    for(int i = 0; i < total; i++) {
+        (*gravador).write(reinterpret_cast<const char *> (&valores[i]), sizeof(Game));
+    }
 
-	// fecha o modo que foi aberto para reescrever, para nao dar problema
-	// depois
-	(*gravador).close();
-	
-	delete [] valores;
+    // fecha o modo que foi aberto para reescrever, para nao dar problema
+    // depois
+    (*gravador).close();
+    
+    delete [] valores;
+}
+
+int seleciona_codigo_game(ifstream *leitor) {
+    cout << "Escolha um dos Games abaixo para comecar a editar..." << endl;
+    cout << endl;
+    
+    listar(leitor, false);
+
+    cout << endl;
+    cout << "Digite o codigo do game que deseja editar: ";
+    int codigo;
+    cin >> codigo;
+
+    return codigo;
 }
 
 /**
@@ -487,43 +505,85 @@ void reescreve_arquivo(ifstream *leitor, ofstream *gravador, Game *selecionado) 
  *
  * */
 void modifica(ifstream *leitor, ofstream *gravador) {
-	cout << "Escolha um dos Games abaixo para comecar a editar..." << endl;
-	cout << endl;
-	
-	listar(leitor, false);
+    int codigo = seleciona_codigo_game(leitor);
+    
+    if (codigo_valido(leitor, codigo)) {
+        Game *selecionado = obtem_unico_game(leitor, codigo);
 
-	cout << endl;
-	cout << "Digite o codigo do game que deseja editar: ";
-	int codigo;
-	cin >> codigo;
+        int escolha;
+        
+        do {
+            limpa_tela();
+            cout << endl;
+            cout << "Informacoes atuais..." << endl;
 
-	if (codigo_valido(leitor, codigo)) {
-		limpa_tela();
-		
-		Game *selecionado = obtem_unico_game(leitor, codigo);
+            cout << endl;
+            imprime_game(*selecionado, false);
 
-		cout << endl;
-		cout << "Informacoes antigas..." << endl;
-		imprime_game(*selecionado, false);
+            cout << endl;
+            cout << "O que deseja modificar?" << endl;
+            cout << "1 - Nome do jogo" << endl;
+            cout << "2 - Ano de Lancamento" << endl;
+            cout << "3 - Plataforma" << endl;
+            cout << "4 - Descricao" << endl;
+            cout << "0 - Voltar" << endl;
+            cout << endl << "Escolha: ";
 
-		cout << endl;
-		cout << "Informe os novos valores: " << endl;
-		cout << " - Nome (ate " << MAX_NOME << " caracteres SEM ESPACO): ";
-		cin >> selecionado->nome;
-		cout << " - Ano do Lancamento: ";
-		cin >> selecionado->ano_lancamento;
-		cout << " - Plataforma (até " << MAX_NOME << " caracteres e separada por - ): ";
-		cin >> selecionado->plataforma;
-		cout << " - Descricao (até " << MAX_NOME << " caracteres e SEM ESPACOS): ";
-		cin >> selecionado->descricao;
+            escolha = getint();
+            
+            cout << endl;
+            limpa_tela();
 
-		reescreve_arquivo(leitor, gravador, selecionado);
+            if (escolha != 0) imprime_game(*selecionado, false);
+            switch(escolha) {
+                case 1: {
+                    cout << endl;
+                    cout << "Novo nome (ate " << MAX_NOME << " caracteres): ";
+                    getstring(selecionado->nome);
+                    break;
+                }
+                case 2: {
+                    cout << endl;
+                    cout << "Novo ano do lancamento: ";
+                    cin >> selecionado->ano_lancamento;
+                    break;
+                }
+                case 3: {
+                    cout << endl;
+                    cout << "Nova plataforma (até " << MAX_NOME << " caracteres e separada por - ): ";
+                    getstring(selecionado->plataforma);
+                    break;
+                }
+                case 4: {
+                    cout << endl;
+                    cout << "Nova descricao (até " << MAX_NOME << " caracteres): ";
+                    getstring(selecionado->descricao);
+                    break;
+                }
+            }
 
-		delete selecionado;
-	} else {
-		cout << "Nao foi possivel modificar o Game com o codigo " << codigo << "." << endl;
-		cout << "Motivo: Codigo invalido ou inexistente." << endl;
-	}
+            if (escolha != 0) {
+                cout << endl;
+                cout << "Deseja editar mais alguma informacao? (Y/n) ";
+                char opcao;
+                cin >> opcao;
+
+                if (opcao == 'y' or opcao == 's' or opcao == 'Y') escolha = -1;
+                else escolha = 0;
+            }
+        } while(escolha != 0);
+
+        reescreve_arquivo(leitor, gravador, selecionado);
+
+        delete selecionado;
+
+        limpa_tela();
+    } else {
+        limpa_tela();
+        cout << endl;
+        cout << "Nao foi possivel modificar o Game com o codigo " << codigo << "." << endl;
+        cout << "Motivo: Codigo invalido ou inexistente." << endl;
+    }
 }
 
 
@@ -538,162 +598,148 @@ void modifica(ifstream *leitor, ofstream *gravador) {
  * aberta.
  * */
 int main() {
-	int escolha;
+    int escolha;
 
-	do {
-		limpa_tela();
-		
-		cout << endl;
-		cout << "\t Gerenciador de Games \t" << endl;
-		cout << "Selecione uma opcao para prosseguir..." << endl;
-		cout << endl;
-		cout << "------------------------------------------" << endl;
-		cout << "|         Lista de opcoes validas:       |" << endl;
-		cout << "------------------------------------------" << endl;
-		cout << "| 1 | Cadastrar novo game                |" << endl;
-		cout << "| 2 | Modificar um game existente        |" << endl;
-		cout << "| 3 | Buscar um determinado game         |" << endl;
-		cout << "| 4 | Mostrar todos os games cadastrados |" << endl;
-		cout << "| 0 | Sair do programa                   |" << endl;
-		cout << "------------------------------------------" << endl;
-		cout << "Escolha uma opcao: ";
-		cin >> escolha;
+    do {
+        limpa_tela();
+        
+        cout << endl;
+        cout << "\t Gerenciador de Games \t" << endl;
+        cout << "Selecione uma opcao para prosseguir..." << endl;
+        cout << endl;
+        cout << "------------------------------------------" << endl;
+        cout << "|         Lista de opcoes validas:       |" << endl;
+        cout << "------------------------------------------" << endl;
+        cout << "| 1 | Cadastrar novo game                |" << endl;
+        cout << "| 2 | Modificar um game existente        |" << endl;
+        cout << "| 3 | Buscar um determinado game         |" << endl;
+        cout << "| 4 | Mostrar todos os games cadastrados |" << endl;
+        cout << "| 0 | Sair do programa                   |" << endl;
+        cout << "------------------------------------------" << endl;
+        cout << "Escolha uma opcao: ";
 
-		switch(escolha) {
-			case 1: {
-				char retornar;
-				do {
-					// vejo a quantidade de registros e faco um novo codigo
-					// para o atual... 
-					ifstream leitor(nome_arquivo, ios::binary | ios::app);
-					int proximo_codigo = qtd_cadastrados(&leitor);
-					leitor.close();
+        escolha = getint();
 
-					// preparo para gravacao
-					ofstream gravador(nome_arquivo, ios::binary | ios::app);
+        switch(escolha) {
+            case 1: {
+                char retornar;
+                do {
+                    // vejo a quantidade de registros e faco um novo codigo
+                    // para o atual... 
+                    ifstream leitor(nome_arquivo, ios::binary | ios::app);
+                    int proximo_codigo = qtd_cadastrados(&leitor);
+                    leitor.close();
 
-					// passa o gravador e o proximo codigo para a funcao
-					cadastrar(&gravador, proximo_codigo+1);
+                    // preparo para gravacao
+                    ofstream gravador(nome_arquivo, ios::binary | ios::app);
 
-					// fecha o gravador
-					gravador.close();
-					cout << endl;
-					cout << "Game cadastrado com sucesso!" << endl;
-					cout << endl;
-					cout << "Deseja cadastrar outro game? (y/n)";
-					cin >> retornar;
-				} while(retornar != 'n' and retornar != 'N');
-				break;
-			}
-			case 2: {
-				char escolha;
-				do {
-					limpa_tela();
-					
-					ifstream leitor(nome_arquivo, ios::binary);
-					ofstream gravador(nome_arquivo, ios::binary | ios::app);
+                    // passa o gravador e o proximo codigo para a funcao
+                    cadastrar(&gravador, proximo_codigo+1);
 
-					if (qtd_cadastrados(&leitor) >= 1) {
-						modifica(&leitor, &gravador);
+                    // fecha o gravador
+                    gravador.close();
+                    cout << endl;
+                    cout << "Game cadastrado com sucesso!" << endl;
+                    cout << endl;
+                    cout << "Deseja cadastrar outro game? (y/n)";
+                    cin >> retornar;
+                } while(retornar != 'n' and retornar != 'N');
+                break;
+            }
+            case 2: {
+                char escolha;
+                do {
+                    limpa_tela();
+                    
+                    ifstream leitor(nome_arquivo, ios::binary);
+                    ofstream gravador(nome_arquivo, ios::binary | ios::app);
 
-						cout << endl;
-						cout << "Sucesso! O Game foi alterado." << endl;
-						cout << "Deseja alterar outro Game? (y/n)";
-						cin >> escolha;
+                    if (qtd_cadastrados(&leitor) >= 1) {
+                        modifica(&leitor, &gravador);
+                        cout << endl;
+                        cout << "Deseja alterar outro Game? (y/n)";
+                        cin >> escolha;
+                    } else {
+                        limpa_tela();
+                        cout << "Cadastre algum Game antes de atualizar sua informacao." << endl;
 
-						
-					} else {
-						limpa_tela();
-						cout << "Cadastre algum Game antes de atualizar sua informacao." << endl;
-						cout << endl;
-						char op;
-						do {
-							cout << "Pressione Y/y para voltar ao menu principal... ";
-							cin >> op;
-						} while(op != 'y' and op != 'Y');
+                        press_enter();
 
-						// sair do loop
-						escolha = 'n';
-					}
-					// fecha os arquivos se estiverem ainda abertos
-					if (leitor) leitor.close();
-					if (gravador) gravador.close();
-					
-				} while(escolha == 'y' or escolha == 'Y');
-				break;
-			}
-			case 3: {
-				int opcao_pesquisa;
-				ifstream leitor(nome_arquivo, ios::binary);
-				if (qtd_cadastrados(&leitor) > 0) {
-					do{
-						limpa_tela();
-						cout << "Qual é o parametro de busca? " << endl;
-						cout << "1 - Codigo de cadastro" << endl;
-						cout << "2 - Nome do Game" << endl;
-						cout << "3 - Ano de Lancamento" << endl;
-						cout << "4 - Plataforma" << endl;
-						cout << "0 - Voltar para o menu principal" << endl;
+                        // sair do loop
+                        escolha = 'n';
+                    }
+                    // fecha os arquivos se estiverem ainda abertos
+                    if (leitor) leitor.close();
+                    if (gravador) gravador.close();
+                    
+                } while(escolha == 'y' or escolha == 'Y');
+                break;
+            }
+            case 3: {
+                int opcao_pesquisa;
+                ifstream leitor(nome_arquivo, ios::binary);
+                if (qtd_cadastrados(&leitor) > 0) {
+                    do{
+                        limpa_tela();
+                        cout << "Busca de Registros" << endl;
+                        cout << endl;
+                        cout << "Qual é o parametro de busca? " << endl;
+                        cout << "1 - Codigo de cadastro" << endl;
+                        cout << "2 - Nome do Game" << endl;
+                        cout << "3 - Ano de Lancamento" << endl;
+                        cout << "4 - Plataforma" << endl;
+                        cout << "0 - Voltar para o menu principal" << endl;
+                        cout << endl;
+                        cout << "Escolha: ";
+                        opcao_pesquisa = getint();
 
-						cin >> opcao_pesquisa;
+                        switch (opcao_pesquisa) {
+                            case 1: {
+                                busca_pelo_codigo(&leitor);
+                                break;
+                            }
+                            case 2: {
+                                busca_pelo_nome(&leitor);
+                                break;
+                            }
+                            case 3: {
+                                busca_pelo_ano(&leitor);
+                                break;
+                            }
+                            case 4: {
+                                busca_pela_plataforma(&leitor);
+                                break;
+                            }
+                        }
+                    } while(opcao_pesquisa!=0);
+                } else {
+                    limpa_tela();
+                    cout << "Cadastre algum Game para poder realizar a busca!" << endl;
+                    press_enter();
+                }
+                leitor.close();
+                break;
+            }
+            case 4: {
+                ifstream arquivo(nome_arquivo, ios::binary);
 
-						switch (opcao_pesquisa) {
-							case 1: {
-								busca_pelo_codigo(&leitor);
-								break;
-							}
-							case 2: {
-								busca_pelo_nome(&leitor);
-								break;
-							}
-							case 3: {
-								busca_pelo_ano(&leitor);
-								break;
-							}
-							case 4: {
-								busca_pela_plataforma(&leitor);
-								break;
-							}
-						}
-					} while(opcao_pesquisa!=0);
-				} else {
-					limpa_tela();
-					cout << "Cadastre algum Game para poder realizar a busca!" << endl;
-					cout << endl;
-					char op;
-					do {
-						cout << "Pressione Y/y para voltar ao menu principal... ";
-						cin >> op;
-					} while(op != 'y' and op != 'Y');
-				}
-				leitor.close();
-				break;
-			}
-			case 4: {
-				ifstream arquivo(nome_arquivo, ios::binary);
+                if(qtd_cadastrados(&arquivo) > 0) {
+                    listar(&arquivo, true);
+                } else {
+                    limpa_tela();
+                    cout << "Nenhum game foi cadastrado." << endl;
+                }
+                arquivo.close();
+                press_enter();
+                break;
+            }
+        }
+        
+    } while (escolha != 0);
 
-				if(qtd_cadastrados(&arquivo) > 0) {
-					listar(&arquivo, true);
-				} else {
-					limpa_tela();
-					cout << "Nenhum game foi cadastrado." << endl;
-					cout << endl;
-					char op;
-					do {
-						cout << "Pressione Y/y para voltar ao menu principal... ";
-						cin >> op;
-					} while(op != 'y' and op != 'Y');
-				}
-				arquivo.close();
-				break;
-			}
-		}
-		
-	} while (escolha != 0);
+    cout << endl;
+    cout << "Ate breve!" << endl;
 
-	cout << endl;
-	cout << "Ate breve!" << endl;
-
-	return 0;
+    return 0;
 }
 
