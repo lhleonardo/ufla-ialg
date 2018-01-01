@@ -21,11 +21,22 @@ struct Game {
     char descricao[MAX_NOME];
 };
 
+/**
+ * Procedimento responsavel por fazer a leitura de uma cadeia de caracteres,
+ * com espacos incluidos, e o retorno dessa leitura sendo manipulado no
+ * vetor passado por parametro.
+ * */
 void getstring(char value[]) {
     cin.ignore();
     cin.getline(value, MAX_NOME);
 }
 
+/**
+ * Funcao responsavel por fazer a leitura de um numero inteiro valido 
+ * obtido pelo usuario. Enquanto esse numero nao for valido, a leitura 
+ * eh repetida, ate que seja informado o numero, e este sera retornardo.
+ * 
+ * */
 int getint() {
     int x=0;
 
@@ -38,6 +49,11 @@ int getint() {
     return x;
 }
 
+/**
+ * Procedimento auxiliar e padrao que simula o comando PAUSE dos sistemas
+ * Windows, executando de forma simples e sem depender de seu sistema 
+ * operacional. Pode haver falhas.
+ * */
 void press_enter() {
     cin.ignore();
     cout << "Pressione ENTER para continuar... " << flush;
