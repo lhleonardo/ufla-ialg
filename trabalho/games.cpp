@@ -99,7 +99,7 @@ void cadastrar(ofstream *gravador, int codigo) {
     cout << " - Nome (ate " << MAX_NOME << " caracteres): ";
     getstring(leitura->nome);
     cout << " - Ano de Lancamento: ";
-    cin >> leitura->ano_lancamento;
+    leitura->ano_lancamento = getint();
     cout << " - Plataforma (ate " << MAX_NOME << " caracteres e separada por - ): ";
     cin >> leitura->plataforma;
     cout << " - Descricao (ate " << MAX_NOME << " caracteres): ";
@@ -567,18 +567,18 @@ void modifica(ifstream *leitor, ofstream *gravador) {
                 case 2: {
                     cout << endl;
                     cout << "Novo ano do lancamento: ";
-                    cin >> selecionado->ano_lancamento;
+                    selecionado->ano_lancamento = getint();
                     break;
                 }
                 case 3: {
                     cout << endl;
-                    cout << "Nova plataforma (até " << MAX_NOME << " caracteres e separada por - ): ";
+                    cout << "Nova plataforma (at� " << MAX_NOME << " caracteres e separada por - ): ";
                     getstring(selecionado->plataforma);
                     break;
                 }
                 case 4: {
                     cout << endl;
-                    cout << "Nova descricao (até " << MAX_NOME << " caracteres): ";
+                    cout << "Nova descricao (at� " << MAX_NOME << " caracteres): ";
                     getstring(selecionado->descricao);
                     break;
                 }
@@ -705,7 +705,7 @@ int main() {
                         limpa_tela();
                         cout << "Busca de Registros" << endl;
                         cout << endl;
-                        cout << "Qual é o parametro de busca? " << endl;
+                        cout << "Qual � o parametro de busca? " << endl;
                         cout << "1 - Codigo de cadastro" << endl;
                         cout << "2 - Nome do Game" << endl;
                         cout << "3 - Ano de Lancamento" << endl;
