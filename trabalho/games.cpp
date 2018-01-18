@@ -5,7 +5,7 @@
 #include <stdlib.h>
 
 // TAMANHO MAXIMO PERMITIDO PARA UM TEXTO, FINS DE NORMALIZACAO
-#define MAX_NOME 300
+#define MAX_TEXTO 300
 
 using namespace std;
 
@@ -15,10 +15,10 @@ char nome_arquivo[] = {"games.dat"};
 // ESTRUTURA QUE REPRESENTA UM DETERMINADO GAME
 struct Game {
     int codigo;
-    char nome[MAX_NOME];
+    char nome[MAX_TEXTO];
     int ano_lancamento;
-    char plataforma[MAX_NOME];
-    char descricao[MAX_NOME];
+    char plataforma[MAX_TEXTO];
+    char descricao[MAX_TEXTO];
 };
 
 /**
@@ -28,7 +28,7 @@ struct Game {
  * */
 void getstring(char value[]) {
     cin.ignore();
-    cin.getline(value, MAX_NOME);
+    cin.getline(value, MAX_TEXTO);
 }
 
 /**
@@ -96,13 +96,13 @@ void cadastrar(ofstream *gravador, int codigo) {
     cout << endl;
 
     cout << "Preencha as informacoes abaixo: " << endl;
-    cout << " - Nome (ate " << MAX_NOME << " caracteres): ";
+    cout << " - Nome (ate " << MAX_TEXTO << " caracteres): ";
     getstring(leitura->nome);
     cout << " - Ano de Lancamento: ";
     leitura->ano_lancamento = getint();
-    cout << " - Plataforma (ate " << MAX_NOME << " caracteres e separada por - ): ";
+    cout << " - Plataforma (ate " << MAX_TEXTO << " caracteres e separada por - ): ";
     cin >> leitura->plataforma;
-    cout << " - Descricao (ate " << MAX_NOME << " caracteres): ";
+    cout << " - Descricao (ate " << MAX_TEXTO << " caracteres): ";
     getstring(leitura->descricao);
 
     leitura->codigo = codigo;
@@ -261,6 +261,7 @@ void busca_pelo_codigo(ifstream *leitor) {
         cout << "Game encontrado! Seguem os dados abaixo: " << endl;
         cout << endl;
         imprime_game(valores[posicao], false);
+        cout << endl;
         press_enter();
     } else {
         cout << endl;
@@ -286,7 +287,7 @@ void busca_pelo_nome(ifstream *leitor) {
 
     cout << "Informe o nome do Game que deseja encontrar: ";
 
-    char *nome = new char[MAX_NOME];
+    char *nome = new char[MAX_TEXTO];
     getstring(nome);
 
     int qtd = qtd_cadastrados(leitor), posicao = -1;
@@ -329,7 +330,7 @@ void busca_pela_plataforma(ifstream *leitor) {
     limpa_tela();
 
     cout << "Informe a plataforma (separados entre hifen): ";
-    char *plataforma = new char[MAX_NOME];
+    char *plataforma = new char[MAX_TEXTO];
     cin >> plataforma;
 
     int qtd = qtd_cadastrados(leitor);
@@ -560,7 +561,7 @@ void modifica(ifstream *leitor, ofstream *gravador) {
             switch(escolha) {
                 case 1: {
                     cout << endl;
-                    cout << "Novo nome (ate " << MAX_NOME << " caracteres): ";
+                    cout << "Novo nome (ate " << MAX_TEXTO << " caracteres): ";
                     getstring(selecionado->nome);
                     break;
                 }
@@ -572,13 +573,13 @@ void modifica(ifstream *leitor, ofstream *gravador) {
                 }
                 case 3: {
                     cout << endl;
-                    cout << "Nova plataforma (at� " << MAX_NOME << " caracteres e separada por - ): ";
+                    cout << "Nova plataforma (at� " << MAX_TEXTO << " caracteres e separada por - ): ";
                     getstring(selecionado->plataforma);
                     break;
                 }
                 case 4: {
                     cout << endl;
-                    cout << "Nova descricao (at� " << MAX_NOME << " caracteres): ";
+                    cout << "Nova descricao (at� " << MAX_TEXTO << " caracteres): ";
                     getstring(selecionado->descricao);
                     break;
                 }
