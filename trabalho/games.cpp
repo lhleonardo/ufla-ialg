@@ -290,21 +290,34 @@ void busca_pelo_nome(ifstream *leitor) {
     char *nome = new char[MAX_TEXTO];
     getstring(nome);
 
-    int qtd = qtd_cadastrados(leitor), posicao = -1;
+    int qtd = qtd_cadastrados(leitor);
+
+    int posicoes[qtd], contador = 0;
 
     Game *valores = busca_todos(leitor, qtd);
 
-    for(int i = 0; i < qtd and posicao == -1; i++) {
-        if (strcmp(valores[i].nome, nome) == 0) {
-            posicao = i;
+    for(int i = 0; i < qtd; i++) {
+        if (strstr(valores[i].nome, nome) != NULL) {
+            posicoes[contador] = i;
+            contador++;
         }
     }
     
-    if (posicao != -1) {
+    if (contador > 0) {
         
         limpa_tela();
         cout << "Game encontrado! Seguem os dados abaixo: " << endl;
-        imprime_game(valores[posicao], false);
+        int i = 0;
+        int posicao;
+        while(i < contador) {
+            posicao = posicoes[i];
+            if (i == 0 and contador == 1)
+                imprime_game(valores[posicao], false);
+            else
+                imprime_game(valores[posicao], true);
+            i++;
+        }
+
         press_enter();
     } else {
         cout << endl;
@@ -340,7 +353,7 @@ void busca_pela_plataforma(ifstream *leitor) {
     int *posicoes = new int[qtd], contador = 0;
         
     for(int i = 0; i < qtd; i++) {
-        if (strcmp(valores[i].plataforma, plataforma) == 0) {
+        if (strstr(valores[i].plataforma, plataforma) != NULL) {
             posicoes[contador] = i;
             contador++;
         }
